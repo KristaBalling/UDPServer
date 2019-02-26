@@ -3,20 +3,29 @@ package com.theironyard;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
         try {
-            DatagramSocket socket = new DatagramSocket(5000);
+            InetAddress address = InetAddress.getLocalHost();
+            DatagramSocket datagramSocket = new DatagramSocket();
 
-            while(true) {
-                byte[] buffer = new byte[50];
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                socket.receive(packet);
-                System.out.println("Text received is: " + new String(buffer));
-            }
+            Scanner scanner = new Scanner(System.in);
+            String echoString;
+            do{
+                System.out.println("Enter string to be echoed: ");
+                echoString = scanner.nextLine();
+
+                byte[] buffer = echoString.getBytes();
+
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, 5000);
+                datagramSocket.send(packet);
+            } while(!echoString.equals("exit"));
+
         } catch(SocketException e) {
             System.out.println("SocketException: " + e.getMessage());
         } catch (IOException e) {
